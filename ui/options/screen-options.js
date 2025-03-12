@@ -14,7 +14,7 @@ import FocusManager from '/core/ui/input/focus-manager.js';
 import { InputEngineEventName } from '/core/ui/input/input-support.js';
 import NavTray from '/core/ui/navigation-tray/model-navigation-tray.js';
 import Options from '/core/ui/options/model-options.js';
-import { CategoryData, OptionType, ShowReloadUIPrompt, ShowRestartGamePrompt, GetGroupLocKey } from '/core/ui/options/options-helpers.js';
+import { CategoryData, OptionType, ShowReloadUIPrompt, ShowRestartGamePrompt } from '/core/ui/options/options-helpers.js';
 import '/core/ui/options/options.js';
 import '/core/ui/options/screen-options-category.js';
 import Panel from '/core/ui/panel-support.js';
@@ -31,11 +31,6 @@ const DEFAULT_PUSH_PROPERTIES = {
 export class ScreenOptions extends Panel {
     constructor() {
         super(...arguments);
-        this.modSelectorOption = null;
-        this.modCategoryPanel = null;
-        this.modOptions = [];
-        this.modList = [];
-        this.modElements = {};
         this.panels = [];
         this.tabData = [];
         this.slotGroup = document.createElement('fxs-slot-group');
@@ -133,37 +128,8 @@ export class ScreenOptions extends Panel {
             this.slotGroup.setAttribute('selected-slot', slotId);
         };
     }
-    onModCategoryUpdate = (optionInfo, value) => {
-        console.error("optionInfo:"+optionInfo)
-        console.error("optionInfo:"+ JSON.stringify(optionInfo))
-        const modSelected = optionInfo.dropdownItems[value].value;
-
-        for(const option of this.modOptions){
-            option.isHidden = (option.mod.value == modSelected);
-            if (option.forceRender) {
-                option.forceRender();
-            }
-            const group = this.Root.querySelector(`[data-group="${option.group}"]`);
-            group.classList.toggle("hidden", (option.mod.value == modSelected));
-        }
-    }
-    
     onInitialize() {
         super.onInitialize();
-        Options.addInitCallback(() => {
-            Options.addOption({ 
-                category: CategoryType.Mods, 
-                // @ts-ignore
-                group: 'mod_selection',
-                type: OptionType.Dropdown, 
-                mod: '',
-                id: "mod-settings-choice-mod-option", 
-                updateListener: this.onModCategoryUpdate, 
-                label: "LOC_OPTIONS_CATEGORY_MODS", 
-                description: "LOC_OPTIONS_CATEGORY_MODS_DESCRIPTION",
-                dropdownItems: this.modList
-            });
-        });
         Options.init();
         // Initialize options data on panel initialization
         for (const option of Options.data.values()) {
@@ -184,7 +150,6 @@ export class ScreenOptions extends Panel {
         this.confirmButton?.addEventListener('action-activate', this.onConfirmOptions);
         this.defaultsButton?.setAttribute("data-audio-focus-ref", "data-audio-hero-focus");
         this.Root.addEventListener(InputEngineEventName, this.onEngineInput);
-        this.onModCategoryUpdate(this.modSelectorOption, 0);
     }
     onDetach() {
         this.Root.removeEventListener(InputEngineEventName, this.onEngineInput);
@@ -325,7 +290,6 @@ export class ScreenOptions extends Panel {
                 category: catID,
                 label: title,
             });
-            categoryPanel.initialize();
         }
         return categoryPanel;
     }
@@ -358,59 +322,18 @@ export class ScreenOptions extends Panel {
         this.confirmButton = MustGetElement('#options-confirm', this.Root);
         this.tabControl = MustGetElement("fxs-tab-bar", this.Root);
         // Loop through options, building HTML into approriate category pages.
+        console.error("create option: "+ JSON.stringify(CategoryData))
         for (const [, option] of Options.data) {
-            
-            if (option.mod != undefined){
-                if (option.mod){
-                    this.modOptions.push(option)
-                    if ( !  this.modList.some( mod => mod['value'] === option.mod.value)){
-                        this.modList.push(option.mod)
-                    }
-                }else {
-                    this.modSelectorOption = option
-                }
-            } else {
-                const category = this.getOrCreateCategoryTab(option.category);
-                const { optionRow, optionElement } = category.component.appendOption(option);
-                
+            const category = this.getOrCreateCategoryTab(option.category);
+            if (!category.maybeComponent) {
                 // @ts-expect-error - gameface custom element initialization is broken when appending custom elements to other custom elements
-                optionElement.initialize();
-                this.onUpdateOptionValue(optionRow, optionElement.component, option);
-                optionRow.classList.toggle("hidden", option.isHidden ?? false);
+                category.initialize();
             }
-        }
-        
-
-        const getCircularReplacer = () => {
-            const seen = new WeakSet();
-            return (key, value) => {
-              if (typeof value === "object" && value !== null) {
-                if (seen.has(value)) {
-                  return;
-                }
-                seen.add(value);
-              }
-              return value;
-            };
-          };
-
-        if (this.modOptions.length > 0) {
-            this.modCategoryPanel = this.getOrCreateCategoryTab("mods");
-            const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(this.modSelectorOption);
+            const { optionRow, optionElement } = category.component.appendOption(option);
+            // @ts-expect-error - gameface custom element initialization is broken when appending custom elements to other custom elements
             optionElement.initialize();
-            this.onUpdateOptionValue(optionRow, optionElement.component, this.modSelectorOption);
-            for (const option of this.modOptions){
-                const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(option);
-                
-                const elements =  this.modElements[option.mod.value]
-                if (!elements) {
-                    this.modElements[option.mod.value] = [optionElement];
-                } else{
-                    elements.push(optionElement);
-                }
-                optionElement.initialize();
-                this.onUpdateOptionValue(optionRow, optionElement.component, option);
-            }
+            this.onUpdateOptionValue(optionRow, optionElement.component, option);
+            optionRow.classList.toggle("hidden", option.isHidden ?? false);
         }
         this.tabControl.setAttribute("tab-items", JSON.stringify(this.tabData));
         const selectedTab = this.Root.getAttribute("selected-tab");
