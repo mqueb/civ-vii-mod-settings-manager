@@ -35,7 +35,6 @@ export class ScreenOptions extends Panel {
         this.modCategoryPanel = null;
         this.modOptions = [];
         this.modList = [];
-        this.modElements = {};
         this.panels = [];
         this.tabData = [];
         this.slotGroup = document.createElement('fxs-slot-group');
@@ -134,8 +133,6 @@ export class ScreenOptions extends Panel {
         };
     }
     onModCategoryUpdate = (optionInfo, value) => {
-        console.error("optionInfo:"+optionInfo)
-        console.error("optionInfo:"+ JSON.stringify(optionInfo))
         const modSelected = optionInfo.dropdownItems[value].value;
 
         for(const option of this.modOptions){
@@ -184,6 +181,7 @@ export class ScreenOptions extends Panel {
         this.confirmButton?.addEventListener('action-activate', this.onConfirmOptions);
         this.defaultsButton?.setAttribute("data-audio-focus-ref", "data-audio-hero-focus");
         this.Root.addEventListener(InputEngineEventName, this.onEngineInput);
+        // MSM: init rendering on first select to hide all other
         this.onModCategoryUpdate(this.modSelectorOption, 0);
     }
     onDetach() {
@@ -325,7 +323,6 @@ export class ScreenOptions extends Panel {
                 category: catID,
                 label: title,
             });
-            categoryPanel.initialize();
         }
         return categoryPanel;
     }
@@ -358,6 +355,7 @@ export class ScreenOptions extends Panel {
         this.confirmButton = MustGetElement('#options-confirm', this.Root);
         this.tabControl = MustGetElement("fxs-tab-bar", this.Root);
         // Loop through options, building HTML into approriate category pages.
+        console.error("create option: "+ JSON.stringify(CategoryData))
         for (const [, option] of Options.data) {
             
             if (option.mod != undefined){
@@ -371,8 +369,11 @@ export class ScreenOptions extends Panel {
                 }
             } else {
                 const category = this.getOrCreateCategoryTab(option.category);
+                if (!category.maybeComponent) {
+                    // @ts-expect-error - gameface custom element initialization is broken when appending custom elements to other custom elements
+                    category.initialize();
+                }
                 const { optionRow, optionElement } = category.component.appendOption(option);
-                
                 // @ts-expect-error - gameface custom element initialization is broken when appending custom elements to other custom elements
                 optionElement.initialize();
                 this.onUpdateOptionValue(optionRow, optionElement.component, option);
@@ -396,18 +397,12 @@ export class ScreenOptions extends Panel {
 
         if (this.modOptions.length > 0) {
             this.modCategoryPanel = this.getOrCreateCategoryTab("mods");
+            this.modCategoryPanel.initialize();
             const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(this.modSelectorOption);
             optionElement.initialize();
             this.onUpdateOptionValue(optionRow, optionElement.component, this.modSelectorOption);
             for (const option of this.modOptions){
                 const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(option);
-                
-                const elements =  this.modElements[option.mod.value]
-                if (!elements) {
-                    this.modElements[option.mod.value] = [optionElement];
-                } else{
-                    elements.push(optionElement);
-                }
                 optionElement.initialize();
                 this.onUpdateOptionValue(optionRow, optionElement.component, option);
             }
