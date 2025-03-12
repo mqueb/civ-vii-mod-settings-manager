@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Mod id="civ-vii-mod-settings-manager" version="1.0.0"
+	xmlns="ModInfo">
+	<Properties>
+		<Name>civ-vii-mod-settings-manager</Name>
+		<Description>Add unique place to edit all modSettings</Description>
+		<Authors>Mattifus</Authors>
+		<Package>Mod</Package>
+		<AffectsSavedGames>0</AffectsSavedGames>
+	</Properties>
+	<Dependencies>
+		<Mod id="base-standard" title="LOC_MODULE_BASE_STANDARD_NAME"/>
+	</Dependencies>
+    <ActionCriteria>
+        <Criteria id="always">
+            <AlwaysMet></AlwaysMet>
+        </Criteria>
+    </ActionCriteria>
+    <ActionGroups>
+        <ActionGroup id="tbq_options_api_shell" scope="shell" criteria="always">
+            <Actions>
+                <UpdateText>
+                    <Item>text/en_us/ModuleText.xml</Item>
+                </UpdateText>
+                <UIScripts>
+                    <Item>ui/options/options-helper.js</Item>
+                    <Item>ui/options/screen-options.js</Item>
+                </UIScripts>
+            </Actions>
+        </ActionGroup>
+        <ActionGroup id="tbq_options_api_game" scope="game" criteria="always">
+            <Actions>
+                <UpdateText>
+                    <Item>text/en_us/ModuleText.xml</Item>
+                </UpdateText>
+                <UIScripts>
+                    <Item>ui/options/options-helper.js</Item>
+                    <Item>ui/options/screen-options.js</Item>
+                </UIScripts>
+            </Actions>
+        </ActionGroup>
+    </ActionGroups>
+</Mod>
+
