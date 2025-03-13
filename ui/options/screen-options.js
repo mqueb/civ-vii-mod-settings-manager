@@ -14,7 +14,7 @@ import FocusManager from '/core/ui/input/focus-manager.js';
 import { InputEngineEventName } from '/core/ui/input/input-support.js';
 import NavTray from '/core/ui/navigation-tray/model-navigation-tray.js';
 import Options from '/core/ui/options/model-options.js';
-import { CategoryData, OptionType, ShowReloadUIPrompt, ShowRestartGamePrompt, GetGroupLocKey } from '/core/ui/options/options-helpers.js';
+import { CategoryData, OptionType, ShowReloadUIPrompt, ShowRestartGamePrompt } from '/core/ui/options/options-helpers.js';
 import '/core/ui/options/options.js';
 import '/core/ui/options/screen-options-category.js';
 import Panel from '/core/ui/panel-support.js';
@@ -136,12 +136,12 @@ export class ScreenOptions extends Panel {
         const modSelected = optionInfo.dropdownItems[value].value;
 
         for(const option of this.modOptions){
-            option.isHidden = (option.mod.value == modSelected);
+            option.isHidden = (option.mod.value != modSelected);
             if (option.forceRender) {
                 option.forceRender();
             }
             const group = this.Root.querySelector(`[data-group="${option.group}"]`);
-            group.classList.toggle("hidden", (option.mod.value == modSelected));
+            group.classList.toggle("hidden", (option.mod.value != modSelected));
         }
     }
     
@@ -380,20 +380,6 @@ export class ScreenOptions extends Panel {
                 optionRow.classList.toggle("hidden", option.isHidden ?? false);
             }
         }
-        
-
-        const getCircularReplacer = () => {
-            const seen = new WeakSet();
-            return (key, value) => {
-              if (typeof value === "object" && value !== null) {
-                if (seen.has(value)) {
-                  return;
-                }
-                seen.add(value);
-              }
-              return value;
-            };
-          };
 
         if (this.modOptions.length > 0) {
             this.modCategoryPanel = this.getOrCreateCategoryTab("mods");
