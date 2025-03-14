@@ -147,20 +147,6 @@ export class ScreenOptions extends Panel {
     
     onInitialize() {
         super.onInitialize();
-        Options.addInitCallback(() => {
-            Options.addOption({ 
-                category: CategoryType.Mods, 
-                // @ts-ignore
-                group: 'mod_selection',
-                type: OptionType.Dropdown, 
-                mod: '',
-                id: "mod-settings-choice-mod-option", 
-                updateListener: this.onModCategoryUpdate, 
-                label: "LOC_OPTIONS_CATEGORY_MODS", 
-                description: "LOC_OPTIONS_CATEGORY_MODS_DESCRIPTION",
-                dropdownItems: this.modList
-            });
-        });
         Options.init();
         // Initialize options data on panel initialization
         for (const option of Options.data.values()) {
@@ -384,6 +370,8 @@ export class ScreenOptions extends Panel {
         if (this.modOptions.length > 0) {
             this.modCategoryPanel = this.getOrCreateCategoryTab("mods");
             this.modCategoryPanel.initialize();
+            this.modSelectorOption.dropdownItems = this.modList;
+            this.modSelectorOption.updateListener = this.onModCategoryUpdate;
             const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(this.modSelectorOption);
             optionElement.initialize();
             this.onUpdateOptionValue(optionRow, optionElement.component, this.modSelectorOption);

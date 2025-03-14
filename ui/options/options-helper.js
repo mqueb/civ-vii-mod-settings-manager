@@ -1,11 +1,25 @@
 
-import { CategoryType, CategoryData } from "/core/ui/options/options-helpers.js";
+import { CategoryType, CategoryData,  } from "/core/ui/options/options-helpers.js";
+import { Options, OptionType } from "/core/ui/options/model-options.js";
+import { ScreenOptions } from "./screen-options.js";
 
-function addModCategory() {
-    CategoryType["Mods"]="mods"
-    CategoryData[CategoryType.Mods]= {
-        title: "LOC_OPTIONS_CATEGORY_MODS",
-        description: "LOC_OPTIONS_CATEGORY_MODS_DESCRIPTION"
-    }
+CategoryType["Mods"]="mods"
+CategoryData[CategoryType.Mods]= {
+    title: "LOC_OPTIONS_CATEGORY_MODS",
+    description: "LOC_OPTIONS_CATEGORY_MODS_DESCRIPTION"
 }
-addModCategory();
+
+Options.addInitCallback(() => {
+    Options.addOption({ 
+        category: CategoryType.Game, 
+        // @ts-ignore
+        group: 'mod_selection',
+        type: OptionType.Dropdown, 
+        mod: '',
+        id: "mod-settings-choice-mod-option", 
+        updateListener: ScreenOptions.onModCategoryUpdate, 
+        label: "LOC_OPTIONS_GROUP_MOD_SELECTION", 
+        description: "LOC_OPTIONS_CATEGORY_MODS_DESCRIPTION",
+        dropdownItems: []
+    });
+});
