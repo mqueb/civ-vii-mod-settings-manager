@@ -342,20 +342,14 @@ export class ScreenOptions extends Panel {
         this.confirmButton = MustGetElement('#options-confirm', this.Root);
         this.tabControl = MustGetElement("fxs-tab-bar", this.Root);
         // Loop through options, building HTML into approriate category pages.
-        console.error("create option: "+ JSON.stringify(CategoryData))
         for (const [, option] of Options.data) {
             if (option.category == CategoryType.Mods || option.mod != undefined){
-                console.error("mod option deteceted: "+ JSON.stringify(option))
                 if (option.mod == ""){
-                    console.error("mod selector option: "+ JSON.stringify(option))
                     this.modSelectorOption = option
                 }else {
                     this.modOptions.push(option)
-                    console.error("mod option: "+ JSON.stringify(option))
                     const modName = option.mod?.value || option.group;
-                    console.error("mod name: "+ modName)
                     if ( ! this.modList.some( mod => mod['value'] === modName)){
-                        console.error("mod name to add: "+ modName)
                         this.modList.push(option.mod || {value: modName, label: GetGroupLocKey(option.group)})
                     }
                 }
