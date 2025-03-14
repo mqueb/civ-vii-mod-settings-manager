@@ -14,7 +14,7 @@ import FocusManager from '/core/ui/input/focus-manager.js';
 import { InputEngineEventName } from '/core/ui/input/input-support.js';
 import NavTray from '/core/ui/navigation-tray/model-navigation-tray.js';
 import Options from '/core/ui/options/model-options.js';
-import { CategoryData, OptionType, ShowReloadUIPrompt, ShowRestartGamePrompt } from '/core/ui/options/options-helpers.js';
+import { CategoryData, OptionType, ShowReloadUIPrompt, ShowRestartGamePrompt, CategoryType, GetGroupLocKey } from '/core/ui/options/options-helpers.js';
 import '/core/ui/options/options.js';
 import '/core/ui/options/screen-options-category.js';
 import Panel from '/core/ui/panel-support.js';
@@ -136,12 +136,13 @@ export class ScreenOptions extends Panel {
         const modSelected = optionInfo.dropdownItems[value].value;
 
         for(const option of this.modOptions){
-            option.isHidden = (option.mod.value != modSelected);
+            const modName = option.mod?.value || option.group;
+            option.isHidden = (modName != modSelected);
             if (option.forceRender) {
                 option.forceRender();
             }
             const group = this.Root.querySelector(`[data-group="${option.group}"]`);
-            group.classList.toggle("hidden", (option.mod.value != modSelected));
+            group.classList.toggle("hidden", (modName != modSelected));
         }
     }
     
@@ -343,15 +344,20 @@ export class ScreenOptions extends Panel {
         // Loop through options, building HTML into approriate category pages.
         console.error("create option: "+ JSON.stringify(CategoryData))
         for (const [, option] of Options.data) {
-            
-            if (option.mod != undefined){
-                if (option.mod){
-                    this.modOptions.push(option)
-                    if ( !  this.modList.some( mod => mod['value'] === option.mod.value)){
-                        this.modList.push(option.mod)
-                    }
-                }else {
+            if (option.category == CategoryType.Mods || option.mod != undefined){
+                console.error("mod option deteceted: "+ JSON.stringify(option))
+                if (option.mod == ""){
+                    console.error("mod selector option: "+ JSON.stringify(option))
                     this.modSelectorOption = option
+                }else {
+                    this.modOptions.push(option)
+                    console.error("mod option: "+ JSON.stringify(option))
+                    const modName = option.mod?.value || option.group;
+                    console.error("mod name: "+ modName)
+                    if ( ! this.modList.some( mod => mod['value'] === modName)){
+                        console.error("mod name to add: "+ modName)
+                        this.modList.push(option.mod || {value: modName, label: GetGroupLocKey(option.group)})
+                    }
                 }
             } else {
                 const category = this.getOrCreateCategoryTab(option.category);
