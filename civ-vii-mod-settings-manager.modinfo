@@ -19,6 +19,9 @@
     <ActionGroups>
         <ActionGroup id="tbq_options_api_shell" scope="shell" criteria="always">
             <Actions>
+                <Properties>
+                    <LoadOrder>5</LoadOrder>
+                </Properties>
                 <UpdateText>
                     <Item>text/en_us/ModuleText.xml</Item>
                 </UpdateText>
@@ -30,6 +33,9 @@
         </ActionGroup>
         <ActionGroup id="tbq_options_api_game" scope="game" criteria="always">
             <Actions>
+                <Properties>
+                    <LoadOrder>5</LoadOrder>
+                </Properties>
                 <UpdateText>
                     <Item>text/en_us/ModuleText.xml</Item>
                 </UpdateText>
