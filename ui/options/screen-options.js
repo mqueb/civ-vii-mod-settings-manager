@@ -376,6 +376,11 @@ export class ScreenOptions extends Panel {
             optionElement.initialize();
             this.onUpdateOptionValue(optionRow, optionElement.component, this.modSelectorOption);
             for (const option of this.modOptions){
+                //Edit group for mad having 'mod' pproperty if LOC exists (allow to have specific LOC for group when comboStyle used)
+                //TODO add check combostyle used
+                if (option.groupCD){
+                    option.group = option.groupCD
+                }
                 const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(option);
                 optionElement.initialize();
                 this.onUpdateOptionValue(optionRow, optionElement.component, option);
