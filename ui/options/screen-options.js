@@ -16,7 +16,7 @@ import NavTray from '/core/ui/navigation-tray/model-navigation-tray.js';
 import Options from '/core/ui/options/model-options.js';
 import { CategoryData, OptionType, ShowReloadUIPrompt, ShowRestartGamePrompt, CategoryType, GetGroupLocKey } from '/core/ui/options/options-helpers.js';
 import '/core/ui/options/options.js';
-import '/core/ui/options/screen-options-category.js';
+import './screen-options-category.js';
 import Panel from '/core/ui/panel-support.js';
 import { MustGetElement } from '/core/ui/utilities/utilities-dom.js';
 import { displayRequestUniqueId } from '/core/ui/context-manager/display-handler.js';
@@ -29,12 +29,15 @@ const DEFAULT_PUSH_PROPERTIES = {
  * Display and modify the game options.
  */
 export class ScreenOptions extends Panel {
+
     constructor() {
         super(...arguments);
-        this.modSelectorOption = null;
         this.modCategoryPanel = null;
+        this.modSelectorOption = null;
+        this.modSelectorOptionDropdownItems = [];
+        this.groupHeaders = null;
+        this.groupClicked = {}
         this.modOptions = [];
-        this.modList = [];
         this.panels = [];
         this.tabData = [];
         this.slotGroup = document.createElement('fxs-slot-group');
@@ -146,6 +149,24 @@ export class ScreenOptions extends Panel {
         }
     }
     
+    
+    onGroupToggle = (inputEvent, group) =>{
+        //if group was clicked less than 500ms ago, ignore the event. (inputEvent Detail a empty ...)
+        if (this.groupClicked[group] && Date.now() - this.groupClicked[group] < 400){
+            return
+        }
+        //store date time a group was clicked
+        this.groupClicked[group] = Date.now()
+        //hide all options in group
+        for(const option of this.modOptions){
+            if (option.group == group){
+                option.isHidden = !option.isHidden;
+                if (option.forceRender) {
+                    option.forceRender();
+                }
+            }
+        }
+    }
     onInitialize() {
         super.onInitialize();
         Options.init();
@@ -167,6 +188,12 @@ export class ScreenOptions extends Panel {
         this.defaultsButton?.setAttribute("data-audio-focus-ref", "data-audio-hero-focus");
         this.confirmButton?.addEventListener('action-activate', this.onConfirmOptions);
         this.defaultsButton?.setAttribute("data-audio-focus-ref", "data-audio-hero-focus");
+
+        // MSM: loop through groupHeaders to add event listener
+        for (const [group, header] of Object.entries(this.groupHeaders)) {
+            header.addEventListener('engine-input', (inputEvent) => this.onGroupToggle(inputEvent, group));
+        }
+
         this.Root.addEventListener(InputEngineEventName, this.onEngineInput);
         // MSM: init rendering on first select to hide all other
         this.onModCategoryUpdate(this.modSelectorOption, 0);
@@ -176,6 +203,12 @@ export class ScreenOptions extends Panel {
         this.cancelButton?.removeEventListener('action-activate', this.onCancelOptions);
         this.defaultsButton?.removeEventListener('action-activate', this.onDefaultOptions);
         this.confirmButton?.removeEventListener('action-activate', this.onConfirmOptions);
+
+        // MSM: loop through groupHeaders to remove event listener
+        for (const [group, header] of Object.entries(this.groupHeaders)) {
+            header?.removeEventListener('engine-input', (inputEvent) => this.onGroupToggle(inputEvent, group));
+        }
+
         super.onDetach();
     }
     onReceiveFocus() {
@@ -349,8 +382,8 @@ export class ScreenOptions extends Panel {
                 }else {
                     this.modOptions.push(option)
                     const modName = option.mod?.value || option.group;
-                    if ( ! this.modList.some( mod => mod['value'] === modName)){
-                        this.modList.push(option.mod || {value: modName, label: GetGroupLocKey(option.group)})
+                    if ( ! this.modSelectorOptionDropdownItems.some( mod => mod['value'] === modName)){
+                        this.modSelectorOptionDropdownItems.push(option.mod || {value: modName, label: GetGroupLocKey(option.group)})
                     }
                 }
             } else {
@@ -370,7 +403,7 @@ export class ScreenOptions extends Panel {
         if (this.modOptions.length > 0) {
             this.modCategoryPanel = this.getOrCreateCategoryTab("mods");
             this.modCategoryPanel.initialize();
-            this.modSelectorOption.dropdownItems = this.modList;
+            this.modSelectorOption.dropdownItems = this.modSelectorOptionDropdownItems;
             this.modSelectorOption.updateListener = this.onModCategoryUpdate;
             const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(this.modSelectorOption);
             optionElement.initialize();
@@ -386,6 +419,8 @@ export class ScreenOptions extends Panel {
                 this.onUpdateOptionValue(optionRow, optionElement.component, option);
             }
         }
+        this.groupHeaders = this.modCategoryPanel.component.getGroupHeaders()
+
         this.tabControl.setAttribute("tab-items", JSON.stringify(this.tabData));
         const selectedTab = this.Root.getAttribute("selected-tab");
         this.tabControl.setAttribute("selected-tab-index", selectedTab ?? "0");

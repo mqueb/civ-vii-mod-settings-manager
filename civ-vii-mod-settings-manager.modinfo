@@ -3,7 +3,7 @@
 	xmlns="ModInfo">
 	<Properties>
 		<Name>civ-vii-mod-settings-manager</Name>
-		<Description>Add unique place to edit all modSettings</Description>
+		<Description>Better ModsOptions rendering</Description>
 		<Authors>Mattifus</Authors>
 		<Package>Mod</Package>
 		<AffectsSavedGames>0</AffectsSavedGames>
@@ -17,7 +17,41 @@
         </Criteria>
     </ActionCriteria>
     <ActionGroups>
-        <ActionGroup id="tbq_options_api_shell" scope="shell" criteria="always">
+        <ActionGroup id="msm_options_api_shell" scope="shell" criteria="always">
+			<Properties>
+				<LoadOrder>4</LoadOrder>
+			</Properties>
+			<Actions>
+				<UpdateText>
+					<Item>text/modOptions.xml</Item>
+				</UpdateText>
+				<UIScripts>
+					<Item>api/options/extend-options.js</Item>
+				</UIScripts>
+				<ImportFiles>
+					<Item>api/options/options-store.js</Item>
+					<Item>api/storage/json-store.js</Item>
+				</ImportFiles>
+			</Actions>
+		</ActionGroup>
+		<ActionGroup id="msm_options_api_game" scope="game" criteria="always">
+			<Properties>
+				<LoadOrder>4</LoadOrder>
+			</Properties>
+			<Actions>
+				<UpdateText>
+					<Item>text/modOptions.xml</Item>
+				</UpdateText>
+				<UIScripts>
+					<Item>api/options/extend-options.js</Item>
+				</UIScripts>
+				<ImportFiles>
+					<Item>api/options/options-store.js</Item>
+					<Item>api/storage/json-store.js</Item>
+				</ImportFiles>
+			</Actions>
+		</ActionGroup>
+        <ActionGroup id="msm_options_api_shell" scope="shell" criteria="always">
             <Actions>
                 <Properties>
                     <LoadOrder>5</LoadOrder>
@@ -31,7 +65,7 @@
                 </UIScripts>
             </Actions>
         </ActionGroup>
-        <ActionGroup id="tbq_options_api_game" scope="game" criteria="always">
+        <ActionGroup id="msm_options_api_game" scope="game" criteria="always">
             <Actions>
                 <Properties>
                     <LoadOrder>5</LoadOrder>
