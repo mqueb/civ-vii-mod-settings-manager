@@ -21,6 +21,7 @@ import Panel from '/core/ui/panel-support.js';
 import { MustGetElement } from '/core/ui/utilities/utilities-dom.js';
 import { displayRequestUniqueId } from '/core/ui/context-manager/display-handler.js';
 import { MainMenuReturnEvent } from '/core/ui/events/shell-events.js';
+import { displayTypeOption } from '../modOptions.js';
 const DEFAULT_PUSH_PROPERTIES = {
     singleton: true,
     createMouseGuard: true
@@ -195,8 +196,10 @@ export class ScreenOptions extends Panel {
         }
 
         this.Root.addEventListener(InputEngineEventName, this.onEngineInput);
-        // MSM: init rendering on first select to hide all other
-        this.onModCategoryUpdate(this.modSelectorOption, 0);
+        // MSM: init rendering on first select to hide all other if displayTypeOption is combobox
+        if (displayTypeOption.value == "combobox"){
+            this.onModCategoryUpdate(this.modSelectorOption, 0);
+        }
     }
     onDetach() {
         this.Root.removeEventListener(InputEngineEventName, this.onEngineInput);
@@ -403,15 +406,18 @@ export class ScreenOptions extends Panel {
         if (this.modOptions.length > 0) {
             this.modCategoryPanel = this.getOrCreateCategoryTab("mods");
             this.modCategoryPanel.initialize();
-            this.modSelectorOption.dropdownItems = this.modSelectorOptionDropdownItems;
-            this.modSelectorOption.updateListener = this.onModCategoryUpdate;
-            const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(this.modSelectorOption);
-            optionElement.initialize();
-            this.onUpdateOptionValue(optionRow, optionElement.component, this.modSelectorOption);
+            
+            if (displayTypeOption.value == "combobox"){
+                this.modSelectorOption.dropdownItems = this.modSelectorOptionDropdownItems;
+                this.modSelectorOption.updateListener = this.onModCategoryUpdate;
+                const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(this.modSelectorOption);
+                optionElement.initialize();
+                this.onUpdateOptionValue(optionRow, optionElement.component, this.modSelectorOption);    
+            }
+            
             for (const option of this.modOptions){
                 //Edit group for mad having 'mod' pproperty if LOC exists (allow to have specific LOC for group when comboStyle used)
-                //TODO add check combostyle used
-                if (option.groupCD){
+                if (displayTypeOption.value == "combobox" && option.groupCD){
                     option.group = option.groupCD
                 }
                 const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(option);

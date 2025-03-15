@@ -18,49 +18,19 @@
     </ActionCriteria>
     <ActionGroups>
         <ActionGroup id="msm_options_api_shell" scope="shell" criteria="always">
-			<Properties>
-				<LoadOrder>4</LoadOrder>
-			</Properties>
-			<Actions>
-				<UpdateText>
-					<Item>text/modOptions.xml</Item>
-				</UpdateText>
-				<UIScripts>
-					<Item>api/options/extend-options.js</Item>
-				</UIScripts>
-				<ImportFiles>
-					<Item>api/options/options-store.js</Item>
-					<Item>api/storage/json-store.js</Item>
-				</ImportFiles>
-			</Actions>
-		</ActionGroup>
-		<ActionGroup id="msm_options_api_game" scope="game" criteria="always">
-			<Properties>
-				<LoadOrder>4</LoadOrder>
-			</Properties>
-			<Actions>
-				<UpdateText>
-					<Item>text/modOptions.xml</Item>
-				</UpdateText>
-				<UIScripts>
-					<Item>api/options/extend-options.js</Item>
-				</UIScripts>
-				<ImportFiles>
-					<Item>api/options/options-store.js</Item>
-					<Item>api/storage/json-store.js</Item>
-				</ImportFiles>
-			</Actions>
-		</ActionGroup>
-        <ActionGroup id="msm_options_api_shell" scope="shell" criteria="always">
             <Actions>
                 <Properties>
                     <LoadOrder>5</LoadOrder>
                 </Properties>
                 <UpdateText>
-                    <Item>text/en_us/ModuleText.xml</Item>
+                    <Item>text/en_us/modOptions.xml</Item>
                 </UpdateText>
+                <ImportFiles>
+                    <Item>api/mod-settings-manager-options-api.js</Item>
+                </ImportFiles>
                 <UIScripts>
-                    <Item>ui/options/options-helper.js</Item>
+                    <Item>ui/modOptions.js</Item>
+                    <Item>ui/options/options-helper.js</Item>                    
                     <Item>ui/options/screen-options.js</Item>
                 </UIScripts>
             </Actions>
@@ -71,12 +41,16 @@
                     <LoadOrder>5</LoadOrder>
                 </Properties>
                 <UpdateText>
-                    <Item>text/en_us/ModuleText.xml</Item>
+                    <Item>text/en_us/modOptions.xml</Item>
                 </UpdateText>
                 <UIScripts>
+                    <Item>ui/modOptions.js</Item>
                     <Item>ui/options/options-helper.js</Item>
                     <Item>ui/options/screen-options.js</Item>
                 </UIScripts>
+                <ImportFiles>
+                    <Item>api/mod-settings-manager-options-api.js</Item>
+                </ImportFiles>
             </Actions>
         </ActionGroup>
     </ActionGroups>

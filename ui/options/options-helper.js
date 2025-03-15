@@ -3,10 +3,13 @@ import { CategoryType, CategoryData,  } from "/core/ui/options/options-helpers.j
 import { Options, OptionType } from "/core/ui/options/model-options.js";
 import { ScreenOptions } from "./screen-options.js";
 
-CategoryType["Mods"]="mods"
-CategoryData[CategoryType.Mods]= {
-    title: "LOC_OPTIONS_CATEGORY_MODS",
-    description: "LOC_OPTIONS_CATEGORY_MODS_DESCRIPTION"
+
+if(!CategoryType["Mods"]) {
+    CategoryType["Mods"] = "mods";
+    CategoryData[CategoryType.Mods] = {
+        title: "LOC_UI_CONTENT_MGR_SUBTITLE",
+        description: "LOC_UI_CONTENT_MGR_SUBTITLE_DESCRIPTION",
+    };
 }
 
 Options.addInitCallback(() => {
@@ -19,7 +22,6 @@ Options.addInitCallback(() => {
         id: "mod-settings-choice-mod-option", 
         updateListener: ScreenOptions.onModCategoryUpdate, 
         label: "LOC_OPTIONS_GROUP_MOD_SELECTION", 
-        description: "LOC_OPTIONS_CATEGORY_MODS_DESCRIPTION",
         dropdownItems: []
     });
 });

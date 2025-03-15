@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Database>
+	<EnglishText>
+		<Row Tag="LOC_OPTIONS_GROUP_MOD_SELECTION">
+            <Text>Select mod to change settings</Text>
+        </Row>
+	 	<Row Tag="LOC_OPTIONS_GROUP_MOD_OPTIONS_MANAGER">
+            <Text>Mod Option Manager settings</Text>
+        </Row>
+	 	<Row Tag="LOC_OPTIONS_DISPLAY_TYPE">
+            <Text>Display Type of options</Text>
+        </Row>
+	 	<Row Tag="LOC_OPTIONS_DISPLAY_TYPE_TOOLTIP">
+            <Text>Change the way options will be rendered</Text>
+        </Row>
+		<Row Tag="LOC_OPTIONS_DISPLAY_TYPE_COMBOBOX">
+            <Text>ComboBox</Text>
+        </Row>
+		<Row Tag="LOC_OPTIONS_DISPLAY_TYPE_COMBOBOX_TOOLTIP">
+			<Text>Add a Combobox on top to Filter Options By mods</Text>
+		</Row>
+		<Row Tag="LOC_OPTIONS_DISPLAY_TYPE_FLAT">
+            <Text>Flat</Text>
+        </Row>
+		
+	</EnglishText>
+</Database>
