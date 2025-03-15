@@ -46,7 +46,7 @@ export class JSONStore {
     }
 
     #readStore() {
-        return JSON.parse(localStorage.getItem(JSONStore.#LOCAL_STORAGE_KEY))
+        return JSON.parse(localStorage.getItem(JSONStore.#LOCAL_STORAGE_KEY) || '{}');
     }
 
     #writeStore(store) {
