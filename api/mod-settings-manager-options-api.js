@@ -199,14 +199,11 @@ export function setupModOptions({ namespace, settingsKey }) {
                     const newValue = optionInfo.dropdownItems[value].value;
                     optionInfo.currentValue = newValue;
                     this.updatedValue = newValue;
-                    console.error("Options.needReloadRefCount: "+ Options.needReloadRefCount);
                     if (optionInfo.currentValue != optionInfo.originalValue) {
-                        console.error("iincrease needReloadRefCount...");
                         Options.needReloadRefCount += 1;
                     }
                     else {
                         if (Options.needReloadRefCount > 0) {
-                            console.error("decrease needReloadRefCount...");
                             Options.needReloadRefCount -= 1;
                         }
                     }
