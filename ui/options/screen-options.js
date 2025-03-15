@@ -421,9 +421,9 @@ export class ScreenOptions extends Panel {
                     }
                 }
             }
-
+            
             if (displayTypeOption.value == "combobox"){
-                this.modSelectorOption.dropdownItems = this.modSelectorOptionDropdownItems.sort((a, b) => GetGroupLocKey(a.value).localeCompare(GetGroupLocKey(b.value)));
+                this.modSelectorOption.dropdownItems = this.modSelectorOptionDropdownItems.sort((a, b) => Locale.stylize(GetGroupLocKey(a.value)).localeCompare(Locale.stylize(GetGroupLocKey(b.value))));
                 this.modSelectorOption.updateListener = this.onModCategoryUpdate;
                 const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(this.modSelectorOption);
                 optionElement.initialize();
@@ -431,7 +431,7 @@ export class ScreenOptions extends Panel {
                 
             } else { // precreate all groups to allow them to be sorted during option creation
                 const groups = this.modOptions.map(option => option.group).filter((value, index, self) => self.indexOf(value) === index);
-                groups.sort((a, b) => GetGroupLocKey(a).localeCompare(GetGroupLocKey(b)))
+                groups.sort((a, b) => Locale.stylize(GetGroupLocKey(a)).localeCompare(Locale.stylize(GetGroupLocKey(b))))
                 for (const group of groups){
                     this.modCategoryPanel.component.getOptionReferenceNode(group)
                 }
