@@ -5,7 +5,7 @@
             <Text>Select mod to change settings</Text>
         </Row>
 	 	<Row Tag="LOC_OPTIONS_GROUP_MOD_OPTIONS_MANAGER">
-            <Text>Mod Option Manager settings</Text>
+            <Text>Mod Option Manager</Text>
         </Row>
 	 	<Row Tag="LOC_OPTIONS_DISPLAY_TYPE">
             <Text>Display Type of options</Text>

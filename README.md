@@ -37,6 +37,6 @@ mod: { value: "your_mod_code", label: "LOC_OPTIONS_MOD_YOUR_MOD", tooltip: "LOC_
 It will define your insert into the dropdown.
 
 
-## How to have multiple group in comboDisplay but only one otherwise
+## How to have multiple group in combobox but only one otherwise
 
-add `groupCD` property to your mod declartion. It will be used as `group` if comboDisplay enabled
+add `groupCB` property to your mod declartion. It will be used as `group` if comboDisplay enabled

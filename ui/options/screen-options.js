@@ -407,12 +407,28 @@ export class ScreenOptions extends Panel {
             this.modCategoryPanel = this.getOrCreateCategoryTab("mods");
             this.modCategoryPanel.initialize();
             
+            //Edit group for mad having 'mod' pproperty if LOC exists (allow to have specific LOC for group when comboStyle used)
+            for (const option of this.modOptions){
+                if (option.groupCB){
+                    //first rendering: groupFLat empty, fill it with group value
+                    if (!option.groupFlat){
+                        option.groupFlat = option.group
+                    }
+                    if ( displayTypeOption.value == "combobox" ){
+                        option.group = option.groupCB
+                    } else {
+                        option.group = option.groupFlat
+                    }
+                }
+            }
+
             if (displayTypeOption.value == "combobox"){
                 this.modSelectorOption.dropdownItems = this.modSelectorOptionDropdownItems.sort((a, b) => GetGroupLocKey(a.value).localeCompare(GetGroupLocKey(b.value)));
                 this.modSelectorOption.updateListener = this.onModCategoryUpdate;
                 const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(this.modSelectorOption);
                 optionElement.initialize();
-                this.onUpdateOptionValue(optionRow, optionElement.component, this.modSelectorOption);    
+                this.onUpdateOptionValue(optionRow, optionElement.component, this.modSelectorOption); 
+                
             } else { // precreate all groups to allow them to be sorted during option creation
                 const groups = this.modOptions.map(option => option.group).filter((value, index, self) => self.indexOf(value) === index);
                 groups.sort((a, b) => GetGroupLocKey(a).localeCompare(GetGroupLocKey(b)))
@@ -422,10 +438,6 @@ export class ScreenOptions extends Panel {
             }
             
             for (const option of this.modOptions){
-                //Edit group for mad having 'mod' pproperty if LOC exists (allow to have specific LOC for group when comboStyle used)
-                if (displayTypeOption.value == "combobox" && option.groupCD){
-                    option.group = option.groupCD
-                }
                 const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(option);
                 optionElement.initialize();
                 this.onUpdateOptionValue(optionRow, optionElement.component, option);
