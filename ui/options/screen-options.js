@@ -140,7 +140,7 @@ export class ScreenOptions extends Panel {
         const modSelected = optionInfo.dropdownItems[value].value;
 
         for(const option of this.modOptions){
-            const modName = option.mod?.value || option.group;
+            const modName = option.mod?.value ?? option.groupFlat;
             option.isHidden = (modName != modSelected);
             if (option.forceRender) {
                 option.forceRender();
@@ -384,9 +384,12 @@ export class ScreenOptions extends Panel {
                     this.modSelectorOption = option
                 }else {
                     this.modOptions.push(option)
-                    const modName = option.mod?.value || option.group;
+                    const modName = option.mod?.value ?? option.groupFlat ?? option.group;
                     if ( ! this.modSelectorOptionDropdownItems.some( mod => mod['value'] === modName)){
-                        this.modSelectorOptionDropdownItems.push(option.mod || {value: modName, label: GetGroupLocKey(option.group)})
+                        const modItem = option.mod ?? {value: modName, label: GetGroupLocKey(option.groupFlat ?? option.group)}
+                        if (this.modSelectorOptionDropdownItems.findIndex(mod => mod.value === modItem.value) == -1){
+                            this.modSelectorOptionDropdownItems.push(modItem)
+                        }
                     }
                 }
             } else {
@@ -409,11 +412,11 @@ export class ScreenOptions extends Panel {
             
             //Edit group for mad having 'mod' pproperty if LOC exists (allow to have specific LOC for group when comboStyle used)
             for (const option of this.modOptions){
-                if (option.groupCB){
-                    //first rendering: groupFLat empty, fill it with group value
-                    if (!option.groupFlat){
-                        option.groupFlat = option.group
-                    }
+                //first rendering: groupFLat empty, fill it with group value
+                if (!option.groupFlat){
+                    option.groupFlat = option.group
+                }
+                if (option.groupCB){   
                     if ( displayTypeOption.value == "combobox" ){
                         option.group = option.groupCB
                     } else {
