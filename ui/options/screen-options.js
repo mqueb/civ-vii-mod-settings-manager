@@ -152,16 +152,33 @@ export class ScreenOptions extends Panel {
     
     
     onGroupToggle = (inputEvent, group) =>{
-        //if group was clicked less than 500ms ago, ignore the event. (inputEvent Detail a empty ...)
+        //if group was clicked less than 400ms ago, ignore the event. (inputEvent Detail a empty ...)
         if (this.groupClicked[group] && Date.now() - this.groupClicked[group] < 400){
             return
         }
         //store date time a group was clicked
         this.groupClicked[group] = Date.now()
-        //hide all options in group
+
+
+        var divider =  this.Root.querySelector(`[data-group="${group}"] div.filigree-divider-h3`);
+        var hidden = false
+        if(divider){
+            divider.classList.remove("filigree-divider-h3")
+            divider.classList.add("filigree-shell-small")
+            hidden = true
+        } else {
+            divider =  this.Root.querySelector(`[data-group="${group}"] div.filigree-shell-small`);
+            divider.classList.remove("filigree-shell-small")
+            divider.classList.add("filigree-divider-h3")
+        }
+        if (group == 'mod_selection'){
+            this.modSelectorOption.isHidden = hidden;
+            this.modSelectorOption.forceRender()
+        }
+        //toggle all options in group
         for(const option of this.modOptions){
             if (option.group == group){
-                option.isHidden = !option.isHidden;
+                option.isHidden = hidden;
                 if (option.forceRender) {
                     option.forceRender();
                 }
@@ -380,13 +397,25 @@ export class ScreenOptions extends Panel {
         // Loop through options, building HTML into approriate category pages.
         for (const [, option] of Options.data) {
             if (option.category == CategoryType.Mods || option.mod != undefined){
+                //first rendering: groupFLat empty, fill it with group value
+                if (!option.groupFlat){
+                    option.groupFlat = option.group
+                }
+                //Edit group for mad having 'mod' pproperty if LOC exists (allow to have specific LOC for group when comboStyle used)
+                if (option.groupCB){   
+                    if ( displayTypeOption.value == "combobox" ){
+                        option.group = option.groupCB
+                    } else {
+                        option.group = option.groupFlat
+                    }
+                }
                 if (option.mod == ""){
                     this.modSelectorOption = option
                 }else {
                     this.modOptions.push(option)
-                    const modName = option.mod?.value ?? option.groupFlat ?? option.group;
+                    const modName = option.mod?.value ?? option.groupFlat;
                     if ( ! this.modSelectorOptionDropdownItems.some( mod => mod['value'] === modName)){
-                        const modItem = option.mod ?? {value: modName, label: GetGroupLocKey(option.groupFlat ?? option.group)}
+                        const modItem = option.mod ?? {value: modName, label: GetGroupLocKey(option.groupFlat)}
                         if (this.modSelectorOptionDropdownItems.findIndex(mod => mod.value === modItem.value) == -1){
                             this.modSelectorOptionDropdownItems.push(modItem)
                         }
@@ -410,25 +439,12 @@ export class ScreenOptions extends Panel {
             this.modCategoryPanel = this.getOrCreateCategoryTab("mods");
             this.modCategoryPanel.initialize();
             
-            //Edit group for mad having 'mod' pproperty if LOC exists (allow to have specific LOC for group when comboStyle used)
-            for (const option of this.modOptions){
-                //first rendering: groupFLat empty, fill it with group value
-                if (!option.groupFlat){
-                    option.groupFlat = option.group
-                }
-                if (option.groupCB){   
-                    if ( displayTypeOption.value == "combobox" ){
-                        option.group = option.groupCB
-                    } else {
-                        option.group = option.groupFlat
-                    }
-                }
-            }
             
             if (displayTypeOption.value == "combobox"){
                 this.modSelectorOption.dropdownItems = this.modSelectorOptionDropdownItems.sort((a, b) => Locale.stylize(GetGroupLocKey(a.value)).localeCompare(Locale.stylize(GetGroupLocKey(b.value))));
                 this.modSelectorOption.updateListener = this.onModCategoryUpdate;
                 const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(this.modSelectorOption);
+                optionElement.classList.add("w-96");
                 optionElement.initialize();
                 this.onUpdateOptionValue(optionRow, optionElement.component, this.modSelectorOption); 
                 

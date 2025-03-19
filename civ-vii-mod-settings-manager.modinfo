@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Mod id="civ-vii-mod-settings-manager" version="1.3.3"
+<Mod id="civ-vii-mod-settings-manager" version="1.3.4"
 	xmlns="ModInfo">
 	<Properties>
 		<Name>civ-vii-mod-settings-manager</Name>
