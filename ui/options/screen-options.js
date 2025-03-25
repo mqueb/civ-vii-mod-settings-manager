@@ -297,6 +297,7 @@ export class ScreenOptions extends Panel {
                     });
                     option.forceRender = () => {
                         component.Root.setAttribute("selected", `${option.currentValue}`);
+                        component.Root.setAttribute("disabled", `${option.isDisabled}`);
                         this.handleForceRenderOptions(optionElement, component, option);
                     };
                 }
