@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Mod id="civ-vii-mod-settings-manager" version="1.3.4"
+<Mod id="civ-vii-mod-settings-manager" version="1.3.7"
 	xmlns="ModInfo">
 	<Properties>
 		<Name>civ-vii-mod-settings-manager</Name>
@@ -24,6 +24,7 @@
                 </Properties>
                 <UpdateText>
                     <Item>text/en_us/modOptions.xml</Item>
+                    <Item>text/ModsHeader.sql</Item>
                 </UpdateText>
                 <ImportFiles>
                     <Item>api/mod-settings-manager-options-api.js</Item>
@@ -42,6 +43,7 @@
                 </Properties>
                 <UpdateText>
                     <Item>text/en_us/modOptions.xml</Item>
+                    <Item>text/ModsHeader.sql</Item>
                 </UpdateText>
                 <UIScripts>
                     <Item>ui/modOptions.js</Item>

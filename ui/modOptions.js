@@ -6,7 +6,8 @@ import { setupModOptions } from '../api/mod-settings-manager-options-api.js';
 import '/core/ui/options/options.js';
 
 // namespace must be unique for your mod to prevent conflicts
-const modOptions = setupModOptions({ namespace: 'mod_settings_manager' });
+export const modOptions = setupModOptions({ namespace: 'mod_settings_manager' });
+
 // the name of the settings group to put this in, matched to a localization key
 const MOD_OPTIONS_GROUP = 'MOD_OPTIONS_MANAGER';
 const MSM_MOD_PROPERTY = { value: "mattifus_msm", label: "LOC_OPTIONS_GROUP_MOD_OPTIONS_MANAGER", tooltip: "" }
@@ -25,4 +26,15 @@ export const displayTypeOption = modOptions.addModOption({
     label: "LOC_OPTIONS_DISPLAY_TYPE",
     description: "LOC_OPTIONS_DISPLAY_TYPE_TOOLTIP",
     mod: MSM_MOD_PROPERTY
+});
+
+export const modSelectorOption = modOptions.addModOption({
+    category: CategoryType.Mods,
+    // @ts-ignore
+    group: 'mod_selection',
+    type: OptionType.Dropdown,
+    mod: '',
+    id: "mod-settings-choice-mod-option",
+    label: "LOC_OPTIONS_GROUP_MOD_SELECTION",
+    dropdownItems: []
 });

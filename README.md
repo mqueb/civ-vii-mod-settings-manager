@@ -5,7 +5,7 @@ ModSettingsManager is a mod to allow to organize Mod Settings. It's not required
 
 ## How to add Option id Mod Category
 
-The simpliest way is by far to use: [OptionsAPI](https://github.com/tpadjen/civ-vii-mod-options-api/pulls)
+The simpliest way is by far to use: [OptionsAPI](https://github.com/tpadjen/civ-vii-mod-options-api)
 
 ## What this Mod do
 

@@ -22,6 +22,5 @@
 		<Row Tag="LOC_OPTIONS_DISPLAY_TYPE_FLAT">
             <Text>Flat</Text>
         </Row>
-		
 	</EnglishText>
 </Database>

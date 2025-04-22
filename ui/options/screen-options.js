@@ -21,7 +21,7 @@ import Panel from '/core/ui/panel-support.js';
 import { MustGetElement } from '/core/ui/utilities/utilities-dom.js';
 import { displayRequestUniqueId } from '/core/ui/context-manager/display-handler.js';
 import { MainMenuReturnEvent } from '/core/ui/events/shell-events.js';
-import { displayTypeOption } from '../modOptions.js';
+import { displayTypeOption, modSelectorOption } from '../modOptions.js';
 const DEFAULT_PUSH_PROPERTIES = {
     singleton: true,
     createMouseGuard: true
@@ -34,8 +34,6 @@ export class ScreenOptions extends Panel {
     constructor() {
         super(...arguments);
         this.modCategoryPanel = null;
-        this.modSelectorOption = null;
-        this.modSelectorOptionDropdownItems = [];
         this.groupHeaders = null;
         this.groupClicked = {}
         this.modOptions = [];
@@ -136,9 +134,8 @@ export class ScreenOptions extends Panel {
             this.slotGroup.setAttribute('selected-slot', slotId);
         };
     }
-    onModCategoryUpdate = (optionInfo, value) => {
-        const modSelected = optionInfo.dropdownItems[value].value;
-
+    onModCategoryUpdate = (selectedIndex) => {
+        const modSelected = modSelectorOption.dropdownItems[selectedIndex].value;
         for(const option of this.modOptions){
             const modName = option.mod?.value ?? option.groupFlat;
             option.isHidden = (modName != modSelected);
@@ -172,8 +169,8 @@ export class ScreenOptions extends Panel {
             divider.classList.add("filigree-divider-h3")
         }
         if (group == 'mod_selection'){
-            this.modSelectorOption.isHidden = hidden;
-            this.modSelectorOption.forceRender()
+            modSelectorOption.isHidden = hidden;
+            modSelectorOption.forceRender()
         }
         //toggle all options in group
         for(const option of this.modOptions){
@@ -207,15 +204,24 @@ export class ScreenOptions extends Panel {
         this.confirmButton?.addEventListener('action-activate', this.onConfirmOptions);
         this.defaultsButton?.setAttribute("data-audio-focus-ref", "data-audio-hero-focus");
 
+        this.Root.addEventListener(InputEngineEventName, this.onEngineInput);
+
         // MSM: loop through groupHeaders to add event listener
         for (const [group, header] of Object.entries(this.groupHeaders)) {
-            header.addEventListener('engine-input', (inputEvent) => this.onGroupToggle(inputEvent, group));
+            header.addEventListener(InputEngineEventName, (inputEvent) => this.onGroupToggle(inputEvent, group));
         }
 
-        this.Root.addEventListener(InputEngineEventName, this.onEngineInput);
         // MSM: init rendering on first select to hide all other if displayTypeOption is combobox
         if (displayTypeOption.value == "combobox"){
-            this.onModCategoryUpdate(this.modSelectorOption, 0);
+            // calculate selectedItemIndex as List not here during OptionAPI init
+            for (let index = 0; index < modSelectorOption.dropdownItems.length; ++index) {
+                if (modSelectorOption.dropdownItems[index].value == modSelectorOption.value) {
+                    modSelectorOption.selectedItemIndex = index;
+                    break;
+                }
+            }
+            modSelectorOption.forceRender();
+            this.onModCategoryUpdate(modSelectorOption.selectedItemIndex);
         }
     }
     onDetach() {
@@ -395,7 +401,7 @@ export class ScreenOptions extends Panel {
         this.defaultsButton = MustGetElement('#options-defaults', this.Root);
         this.confirmButton = MustGetElement('#options-confirm', this.Root);
         this.tabControl = MustGetElement("fxs-tab-bar", this.Root);
-        // Loop through options, building HTML into approriate category pages.
+        // Loop through options, building HTML into appropriate category pages.
         for (const [, option] of Options.data) {
             if (option.category == CategoryType.Mods || option.mod != undefined){
                 //first rendering: groupFLat empty, fill it with group value
@@ -411,14 +417,14 @@ export class ScreenOptions extends Panel {
                     }
                 }
                 if (option.mod == ""){
-                    this.modSelectorOption = option
+
                 }else {
                     this.modOptions.push(option)
                     const modName = option.mod?.value ?? option.groupFlat;
-                    if ( ! this.modSelectorOptionDropdownItems.some( mod => mod['value'] === modName)){
+                    if ( ! modSelectorOption.dropdownItems.some( mod => mod['value'] === modName)){
                         const modItem = option.mod ?? {value: modName, label: GetGroupLocKey(option.groupFlat)}
-                        if (this.modSelectorOptionDropdownItems.findIndex(mod => mod.value === modItem.value) == -1){
-                            this.modSelectorOptionDropdownItems.push(modItem)
+                        if (modSelectorOption.dropdownItems.findIndex(mod => mod.value === modItem.value) == -1){
+                            modSelectorOption.dropdownItems.push(modItem)
                         }
                     }
                 }
@@ -437,18 +443,23 @@ export class ScreenOptions extends Panel {
         }
 
         if (this.modOptions.length > 0) {
+            //override Mods Category to ensure "Mods" will be displayed
+            CategoryData[CategoryType.Mods] = {
+                title: "LOC_UI_OPTIONS_HEADER_MODS",
+            };
+
             this.modCategoryPanel = this.getOrCreateCategoryTab("mods");
             this.modCategoryPanel.initialize();
             
             
             if (displayTypeOption.value == "combobox"){
-                this.modSelectorOption.dropdownItems = this.modSelectorOptionDropdownItems.sort((a, b) => Locale.stylize(GetGroupLocKey(a.value)).localeCompare(Locale.stylize(GetGroupLocKey(b.value))));
-                this.modSelectorOption.updateListener = this.onModCategoryUpdate;
-                const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(this.modSelectorOption);
+                modSelectorOption.dropdownItems = modSelectorOption.dropdownItems.sort((a, b) => Locale.stylize(GetGroupLocKey(a.value)).localeCompare(Locale.stylize(GetGroupLocKey(b.value))));
+
+                const { optionRow, optionElement } = this.modCategoryPanel.component.appendOption(modSelectorOption);
                 optionElement.classList.add("w-96");
                 optionElement.initialize();
-                this.onUpdateOptionValue(optionRow, optionElement.component, this.modSelectorOption); 
-                
+                this.onUpdateOptionValue(optionRow, optionElement.component, modSelectorOption);
+                optionElement.addEventListener('dropdown-selection-change', (event) => { this.onModCategoryUpdate(event.detail.selectedIndex)});
             } else { // precreate all groups to allow them to be sorted during option creation
                 const groups = this.modOptions.map(option => option.group).filter((value, index, self) => self.indexOf(value) === index);
                 groups.sort((a, b) => Locale.stylize(GetGroupLocKey(a)).localeCompare(Locale.stylize(GetGroupLocKey(b))))
